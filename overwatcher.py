@@ -19,6 +19,7 @@ XBL = 'xbl'
 PS4 = 'ps4'
 
 #heroes
+
 hero_mei = 'Mei'
 hero_genji = 'Genji'
 hero_tracer = 'Tracer'
@@ -42,18 +43,44 @@ hero_reinhardt = 'Reinhardt'
 hero_roadhog = 'Roadhog'
 hero_symmetra = 'Symmetra'
 
+heroes = {
+    hero_mei: 'Mei',
+    hero_genji: 'Genji',
+    hero_tracer: 'Tracer',
+    hero_zenyatta: 'Zenyatta',
+    hero_dva: 'DVa',
+    hero_soldier: 'Soldier76',
+    hero_harambe: 'Winston',
+    hero_widowmaker: 'Widowmaker',
+    hero_ana: 'Ana',
+    hero_mccree: 'Mccree',
+    hero_pharah: 'Pharah',
+    hero_zarya: 'Zarya',
+    hero_torb: 'Torbjoern',
+    hero_lucio: 'Lucio',
+    hero_reaper: 'Reaper',
+    hero_hanzo: 'Hanzo',
+    hero_mercy: 'Mercy',
+    hero_bastion: 'Bastion',
+    hero_junkrat: 'Junkrat',
+    hero_reinhardt: 'Reinhardt',
+    hero_roadhog: 'Roadhog',
+    hero_symmetra: 'Symmetra',
+}
+
 #gamemodes
 mode_quick = 'quick-play'
-mode_comp = 'competetive-play'
+mode_comp = 'competitive-play'
 
 
 class OWException(Exception):
     def __init__(self, error, response):
         self.error = error
         self.err_headers = response.headers
+        print(self)
 
     def __str__(self):
-        return self.error
+        return str(self.error)
 
     def __eq__(self, other):
         if type(other) == str:
@@ -84,7 +111,7 @@ def raise_status(response):
     if code == 200:
         return 'nice'
     elif code in errors.keys():
-        raise OWException(code, response.json()['error'])
+        raise OWException(code, response)
     else:
         raise NotImplementedError('not implemented code: {}'.format(code))
 
@@ -148,7 +175,7 @@ class OverWatcher:
 
     def get_general_stats(self, tag, platform, region, mode=mode_quick):
         #gets general stats for all heroes combined such as Damage Done and Cards
-        return self.base_request('{}/allHeroes'.format(mode), tag, platform, region)
+        return self.base_request('{}/allHeroes/'.format(mode), tag, platform, region)
 
     def get_heroes_stats(self, tag, heroes,platform, region, mode=mode_quick):
         #use the hero_heroname variables from above in your heroes iterable unless you are comfident in your capitalizing abilities.
