@@ -177,10 +177,10 @@ class OverWatcher:
         #gets general stats for all heroes combined such as Damage Done and Cards
         return self.base_request('{}/allHeroes/'.format(mode), tag, platform, region)
 
-    def get_heroes_stats(self, tag, heroes,platform, region, mode=mode_quick):
-        #use the hero_heroname variables from above in your heroes iterable unless you are comfident in your capitalizing abilities.
-        heroes = str(hero+',' for hero in heroes)
-        return self.base_request('{}/hero/{}'.format(mode, heroes), tag, platform, region)
+    def get_heroes_stats(self, tag, heroes, platform, region, mode=mode_quick):
+        #use the hero_heroname variables from above in your heroes iterable (list) unless you are comfident in your capitalizing abilities.
+        heroes = str(heroes).strip('()[]').replace('\'', '').replace(' ', '')
+        return self.base_request('{}/hero/{}/'.format(mode, heroes), tag, platform, region)
 
     def get_hero_playtime(self, tag, platform, region, mode=mode_quick):
         #returns list of hero playtime dictionaries.
