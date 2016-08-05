@@ -1,8 +1,12 @@
-from pylinkedlists import DoubleLinkedList
+try:
+    from pylinkedlists import DoubleLinkedList as deque
+except ImportError:
+    from collections import deque
 import time
 import requests
 
 # requests from https://api.lootbox.eu/ api V0.6
+
 
 #regions
 na = 'us'
@@ -14,9 +18,11 @@ gb = 'global'
 
 
 #platforms
+
 PC = 'pc'
 XBL = 'xbl'
 PS4 = 'ps4'
+
 
 #heroes
 
@@ -68,9 +74,21 @@ heroes = {
     hero_symmetra: 'Symmetra',
 }
 
+
 #gamemodes
+
 mode_quick = 'quick-play'
 mode_comp = 'competitive-play'
+
+
+errors = {
+    400: 'Bad Request',
+    401: 'Unauthorized',
+    404: 'Data not found',
+    429: 'Too many requests',
+    500: 'Internal server error',
+    503: 'Service Unavailable'
+}
 
 
 class OWException(Exception):
@@ -93,40 +111,13 @@ class OWException(Exception):
     def __ne__(self, other):
         return not self.__eq__(other)
 
-errors = {
-    400: 'Bad Request',
-    401: 'Unauthorized',
-    404: 'Data not found',
-    429: 'Too many requests',
-    500: 'Internal server error',
-    503: 'Service Unavailable'
-}
-
-
-def raise_status(response):
-    if 'statusCode' in response.json():
-        code = response.json()['statusCode']
-    else:
-        code = response.status_code
-    if code == 200:
-        return 'nice'
-    elif code in errors.keys():
-        raise OWException(code, response)
-    else:
-        raise NotImplementedError('not implemented code: {}'.format(code))
-
-
-def sanitize_string(tag):
-    #replaces # with - and removes spaces
-    return tag.replace('#', '-').replace(' ', '')
-
 
 class RateLimiter:
     #up to max_requests per seconds seconds
     def __init__(self, max_requests, seconds):
         self.max_requests = max_requests
         self.seconds = seconds
-        self.requests = DoubleLinkedList()
+        self.requests = deque()
 
     def refresh(self):
         t = time.time()
@@ -185,3 +176,21 @@ class OverWatcher:
     def get_hero_playtime(self, tag, platform, region, mode=mode_quick):
         #returns list of hero playtime dictionaries.
         return self.base_request('{}/heroes'.format(mode), tag, platform, region)
+
+
+def raise_status(response):
+    if 'statusCode' in response.json():
+        code = response.json()['statusCode']
+    else:
+        code = response.status_code
+    if code == 200:
+        pass
+    elif code in errors.keys():
+        raise OWException(code, response)
+    else:
+        raise NotImplementedError('not implemented code: {}'.format(code))
+
+
+def sanitize_string(tag):
+    #replaces # with - and removes spaces
+    return tag.replace('#', '-').replace(' ', '')
